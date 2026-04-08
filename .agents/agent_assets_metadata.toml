@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "JQqXBbDAYiA9rd7DL1_NZ"
+uri = "file://exports/lab-booking-system.tar.gz"
+type = "unspecified"
+title = "Lab Booking System – Full Project"

@@ -1,0 +1,388 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Lab Booking System API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: bookings
+    description: Lab booking operations
+  - name: admin
+    description: Admin operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List all confirmed/approved bookings (public)
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: Filter by date (YYYY-MM-DD)
+        - name: labName
+          in: query
+          schema:
+            type: string
+          description: Filter by lab name
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a new booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingBody"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Validation error (e.g. capacity exceeded, time out of range)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get a single booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteBooking
+      tags: [bookings]
+      summary: Cancel a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booking cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/bookings:
+    get:
+      operationId: adminListBookings
+      tags: [admin]
+      summary: List all bookings including pending faculty bookings
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, cancelled]
+          description: Filter by status
+      responses:
+        "200":
+          description: All bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  /admin/bookings/{id}/approve:
+    post:
+      operationId: approveBooking
+      tags: [admin]
+      summary: Approve a faculty booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booking approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/bookings/{id}/reject:
+    post:
+      operationId: rejectBooking
+      tags: [admin]
+      summary: Reject a faculty booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectBookingBody"
+      responses:
+        "200":
+          description: Booking rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bookings/schedule:
+    get:
+      operationId: getSchedule
+      tags: [bookings]
+      summary: Get daily schedule view for all labs
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Date in YYYY-MM-DD format
+      responses:
+        "200":
+          description: Schedule for all labs on given date
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DaySchedule"
+
+  /bookings/stats:
+    get:
+      operationId: getBookingStats
+      tags: [bookings]
+      summary: Get booking statistics
+      responses:
+        "200":
+          description: Booking stats summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+        bookerName:
+          type: string
+        bookerType:
+          type: string
+          enum: [faculty]
+        purpose:
+          type: string
+        labName:
+          type: string
+          enum: [achula, prajna, conference]
+        date:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        studentCount:
+          type: integer
+        status:
+          type: string
+          enum: [pending, approved, rejected, cancelled]
+        rejectionReason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - bookerName
+        - bookerType
+        - purpose
+        - labName
+        - date
+        - startTime
+        - endTime
+        - studentCount
+        - status
+        - createdAt
+
+    CreateBookingBody:
+      type: object
+      properties:
+        bookerName:
+          type: string
+        bookerType:
+          type: string
+          enum: [faculty]
+        purpose:
+          type: string
+        labName:
+          type: string
+          enum: [achula, prajna, conference]
+        date:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        studentCount:
+          type: integer
+      required:
+        - bookerName
+        - bookerType
+        - purpose
+        - labName
+        - date
+        - startTime
+        - endTime
+        - studentCount
+
+    RejectBookingBody:
+      type: object
+      properties:
+        reason:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    DaySchedule:
+      type: object
+      properties:
+        date:
+          type: string
+        labs:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabSchedule"
+      required:
+        - date
+        - labs
+
+    LabSchedule:
+      type: object
+      properties:
+        labName:
+          type: string
+        bookings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Booking"
+      required:
+        - labName
+        - bookings
+
+    BookingStats:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+        pendingApprovals:
+          type: integer
+        todayBookings:
+          type: integer
+        labBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              labName:
+                type: string
+              count:
+                type: integer
+            required:
+              - labName
+              - count
+      required:
+        - totalBookings
+        - pendingApprovals
+        - todayBookings
+        - labBreakdown
