@@ -89,15 +89,16 @@ export default function Book() {
     }, {
       onSuccess: () => {
         toast({
-          title: "Booking Submitted",
-          description: "Your staff booking is pending admin approval.",
+          title: "Booking Submitted Successfully",
+          description: "Your reservation request is now pending admin approval.",
+          variant: "success",
         });
         setLocation("/");
       },
-      onError: (err) => {
+      onError: (err: any) => {
         toast({
-          title: "Booking Failed",
-          description: err.data?.error || "An error occurred while booking.",
+          title: "Reservation Failed",
+          description: err.data?.error || "Could not process your booking request.",
           variant: "destructive",
         });
       }

@@ -16,7 +16,7 @@ function Router() {
     <div className="h-[100dvh] flex flex-col bg-background overflow-hidden relative">
       <Nav />
       <main className="flex-1 overflow-hidden relative">
-        <div className="absolute inset-0 overflow-hidden w-full h-full p-2">
+        <div className="absolute inset-0 overflow-y-auto w-full h-full p-2 visible-scrollbar">
           <Switch>
             <Route path="/" component={Home} />
             <Route path="/book" component={Book} />

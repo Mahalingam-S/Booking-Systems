@@ -94,11 +94,11 @@ function AdminPanel() {
   const handleApprove = (id: string) => {
     approveBooking.mutate({ id }, {
       onSuccess: () => {
-        toast({ title: "Booking Approved" });
+        toast({ title: "Booking Authorized", variant: "success" });
         queryClient.invalidateQueries({ queryKey: getAdminListBookingsQueryKey() });
       },
       onError: (err: any) => {
-        toast({ title: "Error", description: err.data?.error || "Failed to approve booking", variant: "destructive" });
+        toast({ title: "Authorization Failed", description: err.data?.error || "Could not approve this request.", variant: "destructive" });
       }
     });
   };
@@ -106,11 +106,11 @@ function AdminPanel() {
   const handleReject = (id: string, reason: string) => {
     rejectBooking.mutate({ id, data: { reason } }, {
       onSuccess: () => {
-        toast({ title: "Booking Rejected" });
+        toast({ title: "Request Rejected", variant: "success" });
         queryClient.invalidateQueries({ queryKey: getAdminListBookingsQueryKey() });
       },
       onError: (err: any) => {
-        toast({ title: "Error", description: err.data?.error || "Failed to reject booking", variant: "destructive" });
+        toast({ title: "Operation Failed", description: err.data?.error || "Could not process the rejection.", variant: "destructive" });
       }
     });
   };

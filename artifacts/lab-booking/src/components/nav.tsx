@@ -20,8 +20,8 @@ export function Nav() {
               <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tighter text-foreground leading-none">AMRITA</span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-0.5">Lab Manager</span>
+              <span className="text-xl font-black tracking-tighter text-foreground leading-none">Amrita School of Computing</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-0.5">Booking System</span>
             </div>
           </Link>
           <div className="hidden md:flex md:gap-1">
@@ -32,9 +32,8 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all rounded-full hover:bg-primary/5 ${
-                    isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`relative flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all rounded-full hover:bg-primary/5 ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   {link.label}
