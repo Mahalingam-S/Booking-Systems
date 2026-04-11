@@ -26,6 +26,7 @@ export const ListBookingsQueryParams = zod.object({
 export const ListBookingsResponseItem = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -44,6 +45,7 @@ export const ListBookingsResponse = zod.array(ListBookingsResponseItem);
  */
 export const CreateBookingBody = zod.object({
   bookerName: zod.string(),
+  bookerEmail: zod.string().email().refine(e => e.endsWith("@cb.amrita.edu"), { message: "Only campus email IDs (@cb.amrita.edu) are allowed" }),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -63,6 +65,7 @@ export const GetBookingParams = zod.object({
 export const GetBookingResponse = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -85,6 +88,7 @@ export const DeleteBookingParams = zod.object({
 export const DeleteBookingResponse = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -110,6 +114,7 @@ export const AdminListBookingsQueryParams = zod.object({
 export const AdminListBookingsResponseItem = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -135,6 +140,7 @@ export const ApproveBookingParams = zod.object({
 export const ApproveBookingResponse = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -161,6 +167,7 @@ export const RejectBookingBody = zod.object({
 export const RejectBookingResponse = zod.object({
   id: zod.string(),
   bookerName: zod.string(),
+  bookerEmail: zod.string().nullish(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
@@ -189,6 +196,7 @@ export const GetScheduleResponse = zod.object({
         zod.object({
           id: zod.string(),
           bookerName: zod.string(),
+          bookerEmail: zod.string().nullish(),
           bookerType: zod.enum(["faculty"]),
           purpose: zod.string(),
           labName: zod.enum(["achula", "prajna", "conference"]),

@@ -55,12 +55,12 @@ export default function Stats() {
   ];
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-6xl animate-in-fade">
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60 transition-all duration-300">
+    <div className="container mx-auto py-6 md:py-10 px-4 max-w-6xl animate-in-fade">
+      <div className="mb-8 md:mb-10">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60 transition-all duration-300">
           Analytics Overview
         </h1>
-        <p className="text-muted-foreground text-lg font-medium italic">Operational insights and resource utilization metrics.</p>
+        <p className="text-muted-foreground text-base md:text-lg font-medium italic">Operational insights and resource utilization metrics.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-10">
@@ -96,7 +96,15 @@ export default function Stats() {
           <CardContent className="pt-10">
             <div className="h-[350px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.labBreakdown} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <BarChart 
+                  data={(stats.labBreakdown || []).map(l => ({
+                    ...l,
+                    displayName: l.labName === "prajna" ? "THE PRAJNA SPACE" : 
+                                l.labName === "achula" ? "ACHALA" : 
+                                "CONFERENCE ROOM"
+                  }))} 
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
@@ -105,10 +113,10 @@ export default function Stats() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis 
-                    dataKey="labName" 
+                    dataKey="displayName" 
                     tickLine={false}
                     axisLine={false}
-                    className="capitalize text-xs font-bold"
+                    className="text-[10px] font-black uppercase tracking-tighter"
                     tick={{ fill: "hsl(var(--muted-foreground))" }}
                     dy={10}
                   />

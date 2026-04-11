@@ -13,18 +13,16 @@ const queryClient = new QueryClient();
 
 function Router() {
   return (
-    <div className="h-[100dvh] flex flex-col bg-background overflow-hidden relative">
+    <div className="min-h-screen flex flex-col bg-background">
       <Nav />
-      <main className="flex-1 overflow-hidden relative">
-        <div className="absolute inset-0 overflow-y-auto w-full h-full p-2 visible-scrollbar">
-          <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/book" component={Book} />
-            <Route path="/admin" component={Admin} />
-            <Route path="/stats" component={Stats} />
-            <Route component={NotFound} />
-          </Switch>
-        </div>
+      <main className="flex-1 pb-24 md:pb-0">
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/book" component={Book} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/stats" component={Stats} />
+          <Route component={NotFound} />
+        </Switch>
       </main>
     </div>
   );

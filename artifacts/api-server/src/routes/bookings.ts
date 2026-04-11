@@ -19,11 +19,12 @@ import {
   GetScheduleResponse,
   GetBookingStatsResponse,
 } from "@workspace/api-zod";
+import { sendBookingNotification, sendBookingStatusUpdate } from "../lib/email";
 
 const router: IRouter = Router();
 
 const LAB_OPENING_TIME = "08:50";
-const LAB_CLOSING_TIME = "16:45";
+const LAB_CLOSING_TIME = "18:45";
 const PRAJNA_MAX_STUDENTS = 30;
 
 function timeToMinutes(time: string): number {
@@ -44,6 +45,7 @@ function formatBooking(booking: any) {
   return {
     ...b,
     id: b._id.toString(),
+    bookerEmail: b.bookerEmail ?? null,
     createdAt: b.createdAt.toISOString(),
     rejectionReason: b.rejectionReason ?? null,
   };
@@ -79,7 +81,7 @@ router.post("/bookings", async (req, res): Promise<void> => {
     return;
   }
 
-  const { bookerName, purpose, labName, date, startTime, endTime, studentCount } = parsed.data;
+  const { bookerName, bookerEmail, purpose, labName, date, startTime, endTime, studentCount } = parsed.data;
   const bookerType = "faculty"; 
 
   if (!isValidTime(startTime)) {
@@ -120,6 +122,7 @@ router.post("/bookings", async (req, res): Promise<void> => {
 
   const booking = await Booking.create({
     bookerName,
+    bookerEmail,
     bookerType,
     purpose,
     labName,
@@ -131,6 +134,9 @@ router.post("/bookings", async (req, res): Promise<void> => {
   });
 
   res.status(201).json(GetBookingResponse.parse(formatBooking(booking)));
+
+  // Trigger non-blocking email notification
+  sendBookingNotification(formatBooking(booking)).catch(console.error);
 });
 
 router.get("/bookings/schedule", async (req, res): Promise<void> => {
@@ -259,6 +265,9 @@ router.post("/admin/bookings/:id/approve", async (req, res): Promise<void> => {
   }
 
   res.json(ApproveBookingResponse.parse(formatBooking(booking)));
+
+  // Send approval notification to faculty
+  sendBookingStatusUpdate(formatBooking(booking)).catch(console.error);
 });
 
 router.post("/admin/bookings/:id/reject", async (req, res): Promise<void> => {
@@ -286,6 +295,9 @@ router.post("/admin/bookings/:id/reject", async (req, res): Promise<void> => {
   }
 
   res.json(RejectBookingResponse.parse(formatBooking(booking)));
+
+  // Send rejection notification to faculty
+  sendBookingStatusUpdate(formatBooking(booking)).catch(console.error);
 });
 
 export default router;

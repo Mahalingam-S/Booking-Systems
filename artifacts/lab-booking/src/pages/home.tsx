@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Users, Clock, CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
+import { CalendarIcon, Users, Clock, CheckCircle2, Building2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,9 +12,9 @@ import { useGetSchedule, getGetScheduleQueryKey, useAdminListBookings, getAdminL
 
 export default function Home() {
   const [date, setDate] = useState<Date>(new Date());
-  
+
   const dateStr = format(date, "yyyy-MM-dd");
-  
+
   const { data: schedule, isLoading, error } = useGetSchedule(
     { date: dateStr },
     { query: { enabled: !!dateStr, queryKey: getGetScheduleQueryKey({ date: dateStr }) } }
@@ -27,17 +28,17 @@ export default function Home() {
   const pendingPrajnaCount = (Array.isArray(pendingBookings) ? pendingBookings : []).filter(b => b.labName === "prajna" && b.date === dateStr).length;
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-6xl animate-in-fade">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+    <div className="container mx-auto py-6 md:py-10 px-4 max-w-6xl animate-in-fade">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-10 gap-6">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
             Resource Schedule
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-base md:text-lg">
             Real-time availability of computer facilities.
           </p>
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Current View</span>
           <Popover>
@@ -84,73 +85,113 @@ export default function Home() {
         </div>
       ) : (
         <div className="grid gap-8 lg:grid-cols-3">
-          {schedule.labs.map((lab) => (
-            <Card key={lab.labName} className="flex flex-col h-full shadow-lg border-border/30 rounded-2xl overflow-hidden group transition-all hover:shadow-xl hover:-translate-y-1">
-              <CardHeader className="bg-muted/5 pb-5 border-b border-border/30 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-125" />
-                <CardTitle className="capitalize text-2xl font-bold flex items-center justify-between">
-                  {lab.labName}
-                  <Badge variant={lab.bookings.length > 0 ? "secondary" : "outline"} className="font-bold">
-                    {lab.bookings.length > 0 ? "Busy" : "Free"}
-                  </Badge>
-                </CardTitle>
-                <CardDescription className="font-medium">
-                  {lab.bookings.length} Reserving {lab.bookings.length === 1 ? 'Slot' : 'Slots'}
-                </CardDescription>
-                {lab.labName === "prajna" && pendingPrajnaCount > 0 && (
-                  <div className="flex items-center gap-2 mt-3 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full w-fit">
-                    <Clock className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-tight">
-                      {pendingPrajnaCount} Waiting Approval
-                    </span>
-                  </div>
-                )}
-              </CardHeader>
-              <CardContent className="pt-6 flex-1 bg-gradient-to-b from-transparent to-muted/5 min-h-[220px] overflow-hidden">
-                {lab.bookings.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center min-h-[160px] text-center opacity-80">
-                    <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-3">
-                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+          {schedule.labs.map((lab) => {
+            const labMeta = {
+              prajna: {
+                title: "THE PRAJNA SPACE",
+                subtitle: "Amrita Collaboratory for Computing Innovation & Co-Creation",
+                location: "AB-III Extension Block, Ground Floor"
+              },
+              achula: {
+                title: "ACHALA",
+                subtitle: "Amrita Collaborative Hub for Active Learning & Assessment",
+                location: "AB-III Extension Block, Third Floor"
+              },
+              conference: {
+                title: "CONFERENCE ROOM",
+                subtitle: "Professional Meeting Space",
+                location: "E-101 AB-III Ground Floor"
+              }
+            }[lab.labName] || { title: lab.labName, subtitle: "", location: "" };
+
+            return (
+              <Card key={lab.labName} className="flex flex-col h-full shadow-lg border-border/30 rounded-2xl overflow-hidden group transition-all hover:shadow-xl hover:-translate-y-1">
+                <CardHeader className="bg-muted/5 pb-5 border-b border-border/30 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-125" />
+                  <CardTitle className="text-xl font-black tracking-tighter flex items-center justify-between gap-2">
+                    <div className="flex flex-col">
+                      <span className="text-primary">{labMeta.title}</span>
+                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                        {labMeta.location}
+                      </span>
                     </div>
-                    <p className="text-sm font-semibold text-green-700">Available All Day</p>
-                    <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-widest font-black opacity-60">Open for Research</p>
+                    <Badge variant={lab.bookings.length > 0 ? "secondary" : "outline"} className="font-bold shrink-0">
+                      {lab.bookings.length > 0 ? "Busy" : "Free"}
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-[10px] font-bold text-muted-foreground leading-tight mt-2 italic opacity-80 min-h-[24px]">
+                    {labMeta.subtitle}
+                  </p>
+                  
+                  <div className="flex flex-col gap-3 mt-4">
+                    <Link 
+                      href={`/book?lab=${lab.labName}`} 
+                      className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground h-9 rounded-lg text-xs font-black uppercase tracking-widest shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98]"
+                    >
+                      <Building2 className="h-4 w-4" />
+                      Book Now
+                    </Link>
+                    
+                    <CardDescription className="font-bold text-xs flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+                      {lab.bookings.length} Reserving {lab.bookings.length === 1 ? 'Slot' : 'Slots'}
+                    </CardDescription>
                   </div>
-                ) : (
-                  <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar pb-2">
-                    {lab.bookings.map((booking) => (
-                      <div 
-                        key={booking.id} 
-                        className="flex flex-col gap-3 p-4 rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-[13px] font-bold">
-                            <Clock className="h-3.5 w-3.5" />
-                            {booking.startTime} - {booking.endTime}
-                          </div>
-                          <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest bg-muted/40 border-none">
-                            {booking.bookerType}
-                          </Badge>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-bold text-base leading-none">{booking.bookerName}</p>
-                          <p className="text-muted-foreground text-xs font-medium italic line-clamp-1">
-                            "{booking.purpose}"
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-1">
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span className="text-xs font-semibold">{booking.studentCount} Students</span>
-                          </div>
-                          <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse" />
-                        </div>
+                  {lab.labName === "prajna" && pendingPrajnaCount > 0 && (
+                    <div className="flex items-center gap-2 mt-3 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full w-fit">
+                      <Clock className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+                      <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-tight">
+                        {pendingPrajnaCount} Waiting Approval
+                      </span>
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent className="pt-6 flex-1 bg-gradient-to-b from-transparent to-muted/5 min-h-[220px] overflow-hidden">
+                  {lab.bookings.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center min-h-[160px] text-center opacity-80">
+                      <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-3">
+                        <CheckCircle2 className="h-6 w-6 text-green-600" />
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                      <p className="text-sm font-semibold text-green-700">Available All Day</p>
+                      <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-widest font-black opacity-60">Open for Research</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar pb-2">
+                      {lab.bookings.map((booking) => (
+                        <div
+                          key={booking.id}
+                          className="flex flex-col gap-3 p-4 rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-[13px] font-bold">
+                              <Clock className="h-3.5 w-3.5" />
+                              {booking.startTime} - {booking.endTime}
+                            </div>
+                            <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest bg-muted/40 border-none">
+                              {booking.bookerType}
+                            </Badge>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-bold text-base leading-none">{booking.bookerName}</p>
+                            <p className="text-muted-foreground text-xs font-medium italic line-clamp-1">
+                              "{booking.purpose}"
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-1">
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                              <Users className="h-3.5 w-3.5" />
+                              <span className="text-xs font-semibold">{booking.studentCount} Attendees</span>
+                            </div>
+                            <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

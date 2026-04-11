@@ -21,17 +21,25 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { toast } = useToast();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "cseadmin@9486") {
+    
+    const admins: Record<string, string> = {
+      "principal_asc@cb.amrita.edu": "principal@9486",
+      "s_mahalingam@cb.amrita.edu": "maha@9486" // You can change this below
+    };
+
+    const normalizedEmail = email.toLowerCase().trim();
+    if (admins[normalizedEmail] && admins[normalizedEmail] === password) {
       setIsAuthenticated(true);
     } else {
       toast({
         title: "Access Denied",
-        description: "Incorrect password.",
+        description: "Invalid email or password.",
         variant: "destructive",
       });
     }
@@ -51,18 +59,31 @@ export default function Admin() {
             </div>
             <CardTitle className="text-center text-3xl font-black tracking-tighter">Admin Access</CardTitle>
             <CardDescription className="text-center font-bold text-[10px] uppercase tracking-widest text-muted-foreground mt-2">
-              Authentication Required
+              Multi-User Authentication
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
             <form onSubmit={handleLogin} className="space-y-4">
-              <Input
-                type="password"
-                placeholder="Enter Secure Password"
-                className="h-12 bg-background/50 border-border/50 rounded-xl px-4 font-bold focus:bg-background transition-all"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Official ID</p>
+                <Input
+                  type="email"
+                  placeholder="name@cb.amrita.edu"
+                  className="h-12 bg-background/50 border-border/50 rounded-xl px-4 font-bold focus:bg-background transition-all"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Secure Password</p>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  className="h-12 bg-background/50 border-border/50 rounded-xl px-4 font-bold focus:bg-background transition-all"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
               <Button type="submit" className="w-full h-12 rounded-xl bg-primary font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-2xl transition-all">
                 Login System
               </Button>
@@ -130,11 +151,13 @@ function AdminPanel() {
       </div>
 
       <Tabs defaultValue="pending" onValueChange={(v) => setActiveTab(v as AdminListBookingsStatus)} className="space-y-8">
-        <TabsList className="glass p-1 rounded-2xl h-14 w-fit border-white/20">
-          <TabsTrigger value="pending" className="rounded-xl px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Pending</TabsTrigger>
-          <TabsTrigger value="approved" className="rounded-xl px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Approved</TabsTrigger>
-          <TabsTrigger value="rejected" className="rounded-xl px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Rejected</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto no-scrollbar pb-1">
+          <TabsList className="glass p-1 rounded-2xl h-14 w-full md:w-fit border-white/20">
+            <TabsTrigger value="pending" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Pending</TabsTrigger>
+            <TabsTrigger value="approved" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Approved</TabsTrigger>
+            <TabsTrigger value="rejected" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Rejected</TabsTrigger>
+          </TabsList>
+        </div>
 
         <div className="space-y-6">
           {isLoading ? (
@@ -150,29 +173,43 @@ function AdminPanel() {
           ) : (
             (bookings as any[]).map((booking) => (
               <Card key={booking.id} className="overflow-hidden glass border-white/30 rounded-3xl shadow-lg transition-all hover:shadow-xl hover:border-primary/20 group">
-                <div className="relative p-8">
+                <div className="relative p-5 md:p-8">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-125" />
 
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
                     <div className="flex-1 space-y-4">
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-black text-2xl capitalize tracking-tight">{booking.labName}</span>
-                        <Badge variant={
-                          booking.status === "approved" ? "default" :
-                            booking.status === "rejected" ? "destructive" :
-                              "secondary"
-                        } className="font-bold py-1 px-3 rounded-md text-[10px] uppercase tracking-widest border-none">
-                          {booking.status}
-                        </Badge>
-                        <Badge variant="outline" className="font-bold text-[10px] uppercase border-primary/20 bg-primary/5 text-primary">
-                          {booking.bookerType}
-                        </Badge>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="flex flex-col">
+                            <span className="font-black text-2xl tracking-tighter text-primary uppercase">
+                              {booking.labName === "prajna" ? "THE PRAJNA SPACE" : 
+                               booking.labName === "achula" ? "ACHALA" : 
+                               "CONFERENCE ROOM"}
+                            </span>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">
+                              {booking.labName === "prajna" ? "AB-III Extension Block, Ground Floor" : 
+                               booking.labName === "achula" ? "AB-III Extension Block, Third Floor" : 
+                               "E-101 AB-III Ground Floor"}
+                            </span>
+                          </div>
+                          <Badge variant={
+                            booking.status === "approved" ? "default" :
+                              booking.status === "rejected" ? "destructive" :
+                                "secondary"
+                          } className="font-bold py-1 px-3 rounded-md text-[10px] uppercase tracking-widest border-none">
+                            {booking.status}
+                          </Badge>
+                          <Badge variant="outline" className="font-bold text-[10px] uppercase border-primary/20 bg-primary/5 text-primary">
+                            {booking.bookerType}
+                          </Badge>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="space-y-1">
+                        <div className="space-y-1 overflow-hidden">
                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Requestor</p>
-                          <p className="font-bold text-lg">{booking.bookerName}</p>
+                          <p className="font-bold text-lg truncate">{booking.bookerName}</p>
+                          <p className="text-[11px] font-medium text-primary/70 truncate">{booking.bookerEmail || "No Email Provided"}</p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date</p>
@@ -184,7 +221,7 @@ function AdminPanel() {
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Capacity</p>
-                          <p className="font-bold text-lg">{booking.studentCount} Students</p>
+                          <p className="font-bold text-lg">{booking.studentCount} Attendees</p>
                         </div>
                       </div>
 

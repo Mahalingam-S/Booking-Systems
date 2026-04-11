@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBooking extends Document {
   bookerName: string;
+  bookerEmail: string;
   bookerType: string;
   purpose: string;
   labName: string;
@@ -17,6 +18,7 @@ export interface IBooking extends Document {
 const BookingSchema: Schema = new Schema(
   {
     bookerName: { type: String, required: true },
+    bookerEmail: { type: String, required: true },
     bookerType: { type: String, required: true },
     purpose: { type: String, required: true },
     labName: { type: String, required: true },
