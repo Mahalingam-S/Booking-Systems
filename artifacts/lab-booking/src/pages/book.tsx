@@ -52,7 +52,7 @@ const formSchema = z.object({
   if (data.labName === "prajna" && data.studentCount > 30) return false;
   return true;
 }, {
-  message: "THE PRAJNA SPACE has a maximum capacity of 30 attendees.",
+  message: "THE PRAJNA SPACE has a maximum strength of 30 attendees.",
   path: ["studentCount"],
 }).refine((data) => {
   if (!data.startTime || !data.endTime) return true;

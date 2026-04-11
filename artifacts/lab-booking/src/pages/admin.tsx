@@ -220,7 +220,7 @@ function AdminPanel() {
                           <p className="font-bold text-lg">{booking.startTime} - {booking.endTime}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Capacity</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Strength</p>
                           <p className="font-bold text-lg">{booking.studentCount} Attendees</p>
                         </div>
                       </div>
