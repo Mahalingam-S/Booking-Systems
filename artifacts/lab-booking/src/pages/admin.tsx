@@ -115,7 +115,11 @@ function AdminPanel() {
     activeTab === "pending" || activeTab === "approved" || activeTab === "rejected"
       ? { status: activeTab as AdminListBookingsStatus }
       : undefined,
-    { query: { queryKey: getAdminListBookingsQueryKey(activeTab !== "all" as any ? { status: activeTab } : undefined) } }
+    { query: { queryKey: getAdminListBookingsQueryKey(
+      activeTab === "pending" || activeTab === "approved" || activeTab === "rejected" 
+        ? { status: activeTab as AdminListBookingsStatus } 
+        : undefined
+    ) } }
   );
 
   const handleApprove = (id: string) => {
