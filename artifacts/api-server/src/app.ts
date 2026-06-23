@@ -50,4 +50,14 @@ app.use((req: any, res: any, next: any) => {
   res.sendFile(path.join(publicPath, "index.html"));
 });
 
+// JSON Error Handler for API routes
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("API Error:", err);
+  if (req.path.startsWith("/api")) {
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  } else {
+    next(err);
+  }
+});
+
 export default app;
