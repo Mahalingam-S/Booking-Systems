@@ -1,5 +1,4 @@
 {
-  "outputDirectory": "artifacts/lab-booking/dist/public",
   "rewrites": [
     {
       "source": "/api/(.*)",
