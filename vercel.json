@@ -1,6 +1,4 @@
 {
-  "framework": "vite",
-  "buildCommand": "pnpm --filter=\"@workspace/lab-booking\" run build",
   "outputDirectory": "artifacts/lab-booking/dist/public",
   "rewrites": [
     {
