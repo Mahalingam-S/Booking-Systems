@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter=\"@workspace/api-server\" --filter=\"@workspace/lab-booking\" run --parallel dev",
     "preinstall": "node -e \"if (!/pnpm/.test(process.env.npm_config_user_agent || '')) { console.error('Use pnpm instead'); process.exit(1); }\"",
-    "build": "pnpm -r --if-present run build",
+    "build": "pnpm --filter=\"@workspace/api-server\" --filter=\"@workspace/lab-booking\" run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
