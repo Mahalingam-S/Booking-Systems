@@ -23,7 +23,7 @@ router.get("/facilities", async (req: any, res: any): Promise<void> => {
     })));
   } catch (error) {
     req.log.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error instanceof Error ? error.message : "Internal server error" });
   }
 });
 
@@ -61,7 +61,7 @@ router.post("/admin/facilities", async (req: any, res: any): Promise<void> => {
     });
   } catch (error) {
     req.log.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error instanceof Error ? error.message : "Internal server error" });
   }
 });
 
@@ -100,7 +100,7 @@ router.put("/admin/facilities/:id", async (req: any, res: any): Promise<void> =>
     });
   } catch (error) {
     req.log.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error instanceof Error ? error.message : "Internal server error" });
   }
 });
 
@@ -128,7 +128,7 @@ router.delete("/admin/facilities/:id", async (req: any, res: any): Promise<void>
     });
   } catch (error) {
     req.log.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error instanceof Error ? error.message : "Internal server error" });
   }
 });
 
