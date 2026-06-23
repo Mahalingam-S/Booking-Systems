@@ -29,7 +29,7 @@ export default function Admin() {
     e.preventDefault();
     
     const admins: Record<string, string> = {
-      "s_mahalingam@cb.amrita.edu": "maha@9486" // You can change this below
+      "s_mahalingam": "MY@9486"
     };
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -38,7 +38,7 @@ export default function Admin() {
     } else {
       toast({
         title: "Access Denied",
-        description: "Invalid email or password.",
+        description: "Invalid username or password.",
         variant: "destructive",
       });
     }
@@ -66,8 +66,8 @@ export default function Admin() {
               <div className="space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Official ID</p>
                 <Input
-                  type="email"
-                  placeholder="admin@gmail.com"
+                  type="text"
+                  placeholder="s_mahalingam"
                   className="h-12 bg-background/50 border-border/50 rounded-xl px-4 font-bold focus:bg-background transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
