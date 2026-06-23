@@ -79,8 +79,8 @@ export async function sendBookingNotification(booking: any) {
         <p><strong>No of Attendees:</strong> ${booking.studentCount}</p>
         <hr />
         <div style="margin-top: 25px; display: flex; gap: 10px;">
-          <a href="${process.env.PUBLIC_URL || "http://localhost:5173"}/admin" style="background-color: #16a34a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">✅ Approve Request</a>
-          <a href="${process.env.PUBLIC_URL || "http://localhost:5173"}/admin" style="background-color: #dc2626; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; margin-left: 10px;">❌ Reject Request</a>
+          <a href="${process.env.PUBLIC_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:5173"))}/admin" style="background-color: #16a34a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">✅ Approve Request</a>
+          <a href="${process.env.PUBLIC_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:5173"))}/admin" style="background-color: #dc2626; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; margin-left: 10px;">❌ Reject Request</a>
         </div>
         <p style="font-size: 11px; color: #999; margin-top: 15px;">Clicking these buttons will take you to the Admin Dashboard for processing.</p>
       </div>
