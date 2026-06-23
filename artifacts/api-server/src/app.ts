@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
 // Serve static files from the frontend's build folder
-const publicPath = path.resolve(__dirname, "../../lab-booking/dist/public");
+const publicPath = path.resolve(__dirname, "../../../public");
 app.use(express.static(publicPath));
 
 // Handle SPA routing for any non-API routes
