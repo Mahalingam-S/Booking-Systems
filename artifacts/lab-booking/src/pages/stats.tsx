@@ -1,12 +1,16 @@
 import { Building2, CalendarCheck, Clock, Users } from "lucide-react";
-import { useGetBookingStats, getGetBookingStatsQueryKey } from "@workspace/api-client-react";
+import { useGetBookingStats, getGetBookingStatsQueryKey, useListFacilities } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Stats() {
-  const { data: stats, isLoading } = useGetBookingStats({
+  const { data: stats, isLoading: isStatsLoading } = useGetBookingStats({
     query: { queryKey: getGetBookingStatsQueryKey() }
   });
+
+  const { data: facilities, isLoading: isFacilitiesLoading } = useListFacilities();
+
+  const isLoading = isStatsLoading || isFacilitiesLoading;
 
   if (isLoading || !stats) {
     return (
@@ -97,12 +101,13 @@ export default function Stats() {
             <div className="h-[350px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
-                  data={(stats.labBreakdown || []).map(l => ({
-                    ...l,
-                    displayName: l.labName === "prajna" ? "THE PRAJNA SPACE" : 
-                                l.labName === "achula" ? "ACHALA" : 
-                                "CONFERENCE ROOM"
-                  }))} 
+                  data={(stats.labBreakdown || []).map(l => {
+                    const facility = facilities?.find(f => f.name === l.labName);
+                    return {
+                      ...l,
+                      displayName: facility ? facility.displayName : l.labName
+                    };
+                  })} 
                   margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                 >
                   <defs>

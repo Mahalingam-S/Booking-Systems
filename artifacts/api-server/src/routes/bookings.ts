@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { connectDB, Booking } from "@workspace/db";
+import { connectDB, Booking, Facility } from "@workspace/db";
 import { OAuth2Client } from "google-auth-library";
 import {
   ListBookingsQueryParams,
@@ -29,7 +29,6 @@ const oauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const LAB_OPENING_TIME = "08:50";
 const LAB_CLOSING_TIME = "18:45";
-const PRAJNA_MAX_STUDENTS = 30;
 
 function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(":").map(Number);
@@ -129,8 +128,14 @@ router.post("/bookings", async (req, res): Promise<void> => {
     return;
   }
 
-  if (labName === "prajna" && (studentCount ?? 1) > PRAJNA_MAX_STUDENTS) {
-    res.status(400).json({ error: `Prajna lab has a maximum capacity of ${PRAJNA_MAX_STUDENTS} students` });
+  const facility = await Facility.findOne({ name: labName, status: "active" });
+  if (!facility) {
+    res.status(400).json({ error: "Selected facility does not exist or is inactive." });
+    return;
+  }
+
+  if ((studentCount ?? 1) > facility.capacity) {
+    res.status(400).json({ error: `${facility.displayName} has a maximum capacity of ${facility.capacity} students` });
     return;
   }
 
@@ -177,7 +182,9 @@ router.get("/bookings/schedule", async (req, res): Promise<void> => {
     return;
   }
 
-  const labNames = ["achula", "prajna", "conference"];
+  const activeFacilities = await Facility.find({ status: "active" }).sort({ name: 1 });
+  const labNames = activeFacilities.map(f => f.name);
+
   const labs = await Promise.all(
     labNames.map(async (labName) => {
       const bookings = await Booking.find({
@@ -201,7 +208,9 @@ router.get("/bookings/stats", async (req, res): Promise<void> => {
   const pending = allBookings.filter((b) => b.status === "pending").length;
   const todayCount = allBookings.filter((b) => b.date === today && b.status === "approved").length;
 
-  const labNames = ["achula", "prajna", "conference"];
+  const activeFacilities = await Facility.find({ status: "active" }).sort({ name: 1 });
+  const labNames = activeFacilities.map(f => f.name);
+
   const labBreakdown = labNames.map((labName) => ({
     labName,
     count: allBookings.filter((b) => b.labName === labName && b.status === "approved").length,

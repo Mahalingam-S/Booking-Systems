@@ -7,7 +7,12 @@ import {
   useApproveBooking,
   useRejectBooking,
   getAdminListBookingsQueryKey,
-  AdminListBookingsStatus
+  AdminListBookingsStatus,
+  useListFacilities,
+  useCreateFacility,
+  useUpdateFacility,
+  useDeleteFacility,
+  getListFacilitiesQueryKey
 } from "@workspace/api-client-react";
 
 import { Button } from "@/components/ui/button";
@@ -97,9 +102,11 @@ export default function Admin() {
 }
 
 function AdminPanel() {
-  const [activeTab, setActiveTab] = useState<AdminListBookingsStatus>("pending");
+  const [activeTab, setActiveTab] = useState<AdminListBookingsStatus | "facilities">("pending");
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const { data: facilities } = useListFacilities();
 
   const approveBooking = useApproveBooking();
   const rejectBooking = useRejectBooking();
@@ -155,10 +162,14 @@ function AdminPanel() {
             <TabsTrigger value="pending" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Pending</TabsTrigger>
             <TabsTrigger value="approved" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Approved</TabsTrigger>
             <TabsTrigger value="rejected" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Rejected</TabsTrigger>
+            <TabsTrigger value="facilities" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Facilities</TabsTrigger>
           </TabsList>
         </div>
 
-        <div className="space-y-6">
+        {activeTab === "facilities" ? (
+          <FacilitiesManager />
+        ) : (
+          <div className="space-y-6">
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -181,14 +192,10 @@ function AdminPanel() {
                         <div className="flex flex-wrap items-center gap-3">
                           <div className="flex flex-col">
                             <span className="font-black text-2xl tracking-tighter text-primary uppercase">
-                              {booking.labName === "prajna" ? "THE PRAJNA SPACE" : 
-                               booking.labName === "achula" ? "ACHALA" : 
-                               "CONFERENCE ROOM"}
+                              {facilities?.find(f => f.name === booking.labName)?.displayName || booking.labName}
                             </span>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">
-                              {booking.labName === "prajna" ? "AB-III Extension Block, Ground Floor" : 
-                               booking.labName === "achula" ? "AB-III Extension Block, Third Floor" : 
-                               "E-101 AB-III Ground Floor"}
+                              {facilities?.find(f => f.name === booking.labName)?.description || "Facility"}
                             </span>
                           </div>
                           <Badge variant={
@@ -261,6 +268,7 @@ function AdminPanel() {
             ))
           )}
         </div>
+        )}
       </Tabs>
     </div>
   );
@@ -301,6 +309,205 @@ function RejectDialog({ bookingId, onReject, isPending }: { bookingId: string, o
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="destructive" onClick={handleConfirm} disabled={!reason.trim() || isPending}>
             Confirm Rejection
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function FacilitiesManager() {
+  const { data: facilities, isLoading } = useListFacilities({
+    query: { queryKey: getListFacilitiesQueryKey() }
+  });
+  const deleteFacility = useDeleteFacility();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const handleDelete = (id: string) => {
+    if (!confirm("Are you sure you want to delete this facility?")) return;
+    deleteFacility.mutate({ id }, {
+      onSuccess: () => {
+        toast({ title: "Facility deleted successfully", variant: "success" });
+        queryClient.invalidateQueries({ queryKey: getListFacilitiesQueryKey() });
+      },
+      onError: (err: any) => {
+        toast({ title: "Error deleting facility", description: err.data?.error || "An error occurred.", variant: "destructive" });
+      }
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-end">
+        <FacilityDialog />
+      </div>
+
+      {isLoading ? (
+        <div className="animate-pulse bg-muted/40 h-32 rounded-2xl border border-border/20" />
+      ) : (!facilities || facilities.length === 0) ? (
+        <div className="text-center py-20 bg-muted/10 rounded-2xl border border-dashed border-border/50">
+          <p className="text-muted-foreground text-lg font-medium italic">No facilities configured.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {facilities.map((fac) => (
+            <Card key={fac.id} className="overflow-hidden glass border-white/30 rounded-3xl shadow-lg">
+              <CardHeader className="bg-muted/5 pb-4 border-b border-border/10">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-xl font-bold">{fac.displayName}</CardTitle>
+                    <CardDescription className="text-xs uppercase tracking-widest font-bold mt-1">
+                      {fac.name} • {fac.type}
+                    </CardDescription>
+                  </div>
+                  <Badge variant={fac.status === "active" ? "default" : "secondary"}>
+                    {fac.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Capacity</p>
+                    <p className="font-bold">{fac.capacity}</p>
+                  </div>
+                  {fac.systemCount && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Systems</p>
+                      <p className="font-bold">{fac.systemCount}</p>
+                    </div>
+                  )}
+                </div>
+                {fac.description && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</p>
+                    <p className="text-sm font-medium">{fac.description}</p>
+                  </div>
+                )}
+                <div className="flex gap-2 pt-2 border-t border-border/10">
+                  <FacilityDialog facility={fac} />
+                  <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleDelete(fac.id!)}>
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FacilityDialog({ facility }: { facility?: any }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(facility?.name || "");
+  const [displayName, setDisplayName] = useState(facility?.displayName || "");
+  const [type, setType] = useState<"lab" | "classroom">(facility?.type || "lab");
+  const [capacity, setCapacity] = useState(facility?.capacity || 30);
+  const [systemCount, setSystemCount] = useState(facility?.systemCount || "");
+  const [description, setDescription] = useState(facility?.description || "");
+  const [status, setStatus] = useState<"active" | "inactive">(facility?.status || "active");
+
+  const createFacility = useCreateFacility();
+  const updateFacility = useUpdateFacility();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    const data = {
+      name,
+      displayName,
+      type,
+      capacity: Number(capacity),
+      systemCount: systemCount ? Number(systemCount) : undefined,
+      description: description || undefined,
+      status
+    };
+
+    if (facility) {
+      updateFacility.mutate({ id: facility.id, data }, {
+        onSuccess: () => {
+          toast({ title: "Facility updated successfully", variant: "success" });
+          queryClient.invalidateQueries({ queryKey: getListFacilitiesQueryKey() });
+          setOpen(false);
+        },
+        onError: (err: any) => {
+          toast({ title: "Error", description: err.data?.error || "Failed to update.", variant: "destructive" });
+        }
+      });
+    } else {
+      createFacility.mutate({ data }, {
+        onSuccess: () => {
+          toast({ title: "Facility created successfully", variant: "success" });
+          queryClient.invalidateQueries({ queryKey: getListFacilitiesQueryKey() });
+          setOpen(false);
+        },
+        onError: (err: any) => {
+          toast({ title: "Error", description: err.data?.error || "Failed to create.", variant: "destructive" });
+        }
+      });
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {facility ? (
+          <Button variant="outline" size="sm" className="flex-1">Edit</Button>
+        ) : (
+          <Button className="bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20 px-6 py-2">
+            Add New Facility
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{facility ? "Edit Facility" : "Add Facility"}</DialogTitle>
+          <DialogDescription>
+            Configure lab or classroom details here.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">ID Name</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. prajna" className="col-span-3" disabled={!!facility} />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Display</label>
+            <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="e.g. The Prajna Space" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Type</label>
+            <select value={type} onChange={(e) => setType(e.target.value as any)} className="col-span-3 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option value="lab">Laboratory</option>
+              <option value="classroom">Classroom</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Capacity</label>
+            <Input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value as any)} className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Systems</label>
+            <Input type="number" value={systemCount} onChange={(e) => setSystemCount(e.target.value)} placeholder="Optional" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Status</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value as any)} className="col-span-3 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Description</label>
+            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional location or details" className="col-span-3" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={handleSave} disabled={createFacility.isPending || updateFacility.isPending}>
+            {facility ? "Save Changes" : "Create Facility"}
           </Button>
         </DialogFooter>
       </DialogContent>

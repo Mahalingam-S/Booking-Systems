@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useCreateBooking } from "@workspace/api-client-react";
+import { useCreateBooking, useListFacilities } from "@workspace/api-client-react";
 
 // Helper to decode JWT without a library
 const decodeJwt = (token: string) => {
@@ -46,7 +46,7 @@ const formSchema = z.object({
   bookerName: z.string(),
   bookerEmail: z.string().email(),
   bookerType: z.literal("faculty").default("faculty"),
-  labName: z.enum(["achula", "prajna", "conference"], { required_error: "Please select a lab." }),
+  labName: z.string({ required_error: "Please select a facility." }),
   date: z.date({ required_error: "A date is required." }),
   startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
     .refine(isValidTime, { message: "Time must be between 08:50 and 18:45" }),
@@ -54,12 +54,6 @@ const formSchema = z.object({
     .refine(isValidTime, { message: "Time must be between 08:50 and 18:45" }),
   purpose: z.string().min(5, { message: "Purpose must be at least 5 characters." }),
   studentCount: z.coerce.number().min(1, { message: "Must have at least 1 attendee." }),
-}).refine((data) => {
-  if (data.labName === "prajna" && data.studentCount > 30) return false;
-  return true;
-}, {
-  message: "THE PRAJNA SPACE has a maximum strength of 30 attendees.",
-  path: ["studentCount"],
 }).refine((data) => {
   if (!data.startTime || !data.endTime) return true;
   const start = data.startTime.split(":").map(Number);
@@ -76,6 +70,7 @@ export default function Book() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const createBooking = useCreateBooking();
+  const { data: facilities } = useListFacilities();
   
   const [googleUser, setGoogleUser] = useState<{ name: string; email: string; token: string } | null>(null);
 
@@ -211,9 +206,11 @@ export default function Book() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-xl border-border/20 shadow-2xl">
-                          <SelectItem value="prajna" className="font-bold">THE PRAJNA SPACE (AB-III Extension Block, Ground Floor)</SelectItem>
-                          <SelectItem value="achula" className="font-bold">ACHULA (AB-III Extension Block, Third Floor)</SelectItem>
-                          <SelectItem value="conference" className="font-bold">CONFERENCE ROOM (E-101 AB-III Ground Floor)</SelectItem>
+                          {facilities?.map((f) => (
+                            <SelectItem key={f.id} value={f.name} className="font-bold">
+                              {f.displayName} {f.capacity ? `(Capacity: ${f.capacity})` : ""}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />

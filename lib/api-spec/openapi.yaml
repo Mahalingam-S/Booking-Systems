@@ -13,6 +13,8 @@ tags:
     description: Lab booking operations
   - name: admin
     description: Admin operations
+  - name: facilities
+    description: Facility management operations
 paths:
   /healthz:
     get:
@@ -235,6 +237,100 @@ paths:
               schema:
                 $ref: "#/components/schemas/BookingStats"
 
+  /facilities:
+    get:
+      operationId: listFacilities
+      tags: [facilities]
+      summary: List all active facilities
+      responses:
+        "200":
+          description: List of facilities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Facility"
+
+  /admin/facilities:
+    post:
+      operationId: createFacility
+      tags: [facilities]
+      summary: Create a new facility
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFacilityBody"
+      responses:
+        "201":
+          description: Facility created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facility"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/facilities/{id}:
+    put:
+      operationId: updateFacility
+      tags: [facilities]
+      summary: Update a facility
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFacilityBody"
+      responses:
+        "200":
+          description: Facility updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facility"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteFacility
+      tags: [facilities]
+      summary: Delete or deactivate a facility
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Facility deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facility"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -259,7 +355,6 @@ components:
           type: string
         labName:
           type: string
-          enum: [achula, prajna, conference]
         date:
           type: string
         startTime:
@@ -303,7 +398,6 @@ components:
           type: string
         labName:
           type: string
-          enum: [achula, prajna, conference]
         date:
           type: string
         startTime:
@@ -389,3 +483,68 @@ components:
         - pendingApprovals
         - todayBookings
         - labBreakdown
+
+    Facility:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        type:
+          type: string
+          enum: [lab, classroom]
+        capacity:
+          type: integer
+        systemCount:
+          type: integer
+          nullable: true
+        seatCount:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, inactive]
+      required:
+        - id
+        - name
+        - displayName
+        - type
+        - capacity
+        - status
+
+    CreateFacilityBody:
+      type: object
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+        type:
+          type: string
+          enum: [lab, classroom]
+        capacity:
+          type: integer
+        systemCount:
+          type: integer
+          nullable: true
+        seatCount:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, inactive]
+      required:
+        - name
+        - displayName
+        - type
+        - capacity
+        - status

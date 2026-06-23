@@ -6,7 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BookingBookerType } from "./bookingBookerType";
-import type { BookingLabName } from "./bookingLabName";
 import type { BookingStatus } from "./bookingStatus";
 
 export interface Booking {
@@ -14,7 +13,7 @@ export interface Booking {
   bookerName: string;
   bookerType: BookingBookerType;
   purpose: string;
-  labName: BookingLabName;
+  labName: string;
   date: string;
   startTime: string;
   endTime: string;

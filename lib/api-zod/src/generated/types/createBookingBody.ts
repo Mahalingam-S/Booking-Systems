@@ -6,14 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CreateBookingBodyBookerType } from "./createBookingBodyBookerType";
-import type { CreateBookingBodyLabName } from "./createBookingBodyLabName";
 
 export interface CreateBookingBody {
   idToken: string;
   bookerName: string;
   bookerType: CreateBookingBodyBookerType;
   purpose: string;
-  labName: CreateBookingBodyLabName;
+  labName: string;
   date: string;
   startTime: string;
   endTime: string;

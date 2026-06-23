@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useGetSchedule, getGetScheduleQueryKey, useAdminListBookings, getAdminListBookingsQueryKey } from "@workspace/api-client-react";
+import { useGetSchedule, getGetScheduleQueryKey, useAdminListBookings, getAdminListBookingsQueryKey, useListFacilities } from "@workspace/api-client-react";
 
 export default function Home() {
   const [date, setDate] = useState<Date>(new Date());
@@ -25,7 +25,9 @@ export default function Home() {
     { query: { queryKey: getAdminListBookingsQueryKey({ status: "pending" }) } }
   );
 
-  const pendingPrajnaCount = (Array.isArray(pendingBookings) ? pendingBookings : []).filter(b => b.labName === "prajna" && b.date === dateStr).length;
+  const { data: facilities } = useListFacilities();
+
+  const getPendingCount = (labName: string) => (Array.isArray(pendingBookings) ? pendingBookings : []).filter(b => b.labName === labName && b.date === dateStr).length;
 
   return (
     <div className="container mx-auto py-6 md:py-10 px-4 max-w-6xl animate-in-fade">
@@ -86,23 +88,10 @@ export default function Home() {
       ) : (
         <div className="grid gap-8 lg:grid-cols-3">
           {schedule.labs.map((lab) => {
-            const labMeta = {
-              prajna: {
-                title: "THE PRAJNA SPACE",
-                subtitle: "Amrita Collaboratory for Computing Innovation & Co-Creation",
-                location: "AB-III Extension Block, Ground Floor"
-              },
-              achula: {
-                title: "ACHALA",
-                subtitle: "Amrita Collaborative Hub for Active Learning & Assessment",
-                location: "AB-III Extension Block, Third Floor"
-              },
-              conference: {
-                title: "CONFERENCE ROOM",
-                subtitle: "Professional Meeting Space",
-                location: "E-101 AB-III Ground Floor"
-              }
-            }[lab.labName] || { title: lab.labName, subtitle: "", location: "" };
+            const facility = facilities?.find(f => f.name === lab.labName);
+            const title = facility?.displayName || lab.labName;
+            const subtitle = facility?.description || "";
+            const pendingCount = getPendingCount(lab.labName);
 
             return (
               <Card key={lab.labName} className="flex flex-col h-full shadow-lg border-border/30 rounded-2xl overflow-hidden group transition-all hover:shadow-xl hover:-translate-y-1">
@@ -110,9 +99,9 @@ export default function Home() {
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-125" />
                   <CardTitle className="text-xl font-black tracking-tighter flex items-center justify-between gap-2">
                     <div className="flex flex-col">
-                      <span className="text-primary">{labMeta.title}</span>
+                      <span className="text-primary">{title}</span>
                       <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
-                        {labMeta.location}
+                        {facility?.type === "classroom" ? "Classroom" : "Laboratory"}
                       </span>
                     </div>
                     <Badge variant={lab.bookings.length > 0 ? "secondary" : "outline"} className="font-bold shrink-0">
@@ -120,7 +109,7 @@ export default function Home() {
                     </Badge>
                   </CardTitle>
                   <p className="text-[10px] font-bold text-muted-foreground leading-tight mt-2 italic opacity-80 min-h-[24px]">
-                    {labMeta.subtitle}
+                    {subtitle}
                   </p>
                   
                   <div className="flex flex-col gap-3 mt-4">
@@ -137,11 +126,11 @@ export default function Home() {
                       {lab.bookings.length} Reserving {lab.bookings.length === 1 ? 'Slot' : 'Slots'}
                     </CardDescription>
                   </div>
-                  {lab.labName === "prajna" && pendingPrajnaCount > 0 && (
+                  {pendingCount > 0 && (
                     <div className="flex items-center gap-2 mt-3 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full w-fit">
                       <Clock className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
                       <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-tight">
-                        {pendingPrajnaCount} Waiting Approval
+                        {pendingCount} Waiting Approval
                       </span>
                     </div>
                   )}

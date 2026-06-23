@@ -28,7 +28,7 @@ export const ListBookingsResponseItem = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -47,7 +47,7 @@ export const CreateBookingBody = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -66,7 +66,7 @@ export const GetBookingResponse = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -88,7 +88,7 @@ export const DeleteBookingResponse = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -113,7 +113,7 @@ export const AdminListBookingsResponseItem = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -138,7 +138,7 @@ export const ApproveBookingResponse = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -164,7 +164,7 @@ export const RejectBookingResponse = zod.object({
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
-  labName: zod.enum(["achula", "prajna", "conference"]),
+  labName: zod.string(),
   date: zod.string(),
   startTime: zod.string(),
   endTime: zod.string(),
@@ -192,7 +192,7 @@ export const GetScheduleResponse = zod.object({
           bookerName: zod.string(),
           bookerType: zod.enum(["faculty"]),
           purpose: zod.string(),
-          labName: zod.enum(["achula", "prajna", "conference"]),
+          labName: zod.string(),
           date: zod.string(),
           startTime: zod.string(),
           endTime: zod.string(),
@@ -219,4 +219,83 @@ export const GetBookingStatsResponse = zod.object({
       count: zod.number(),
     }),
   ),
+});
+
+/**
+ * @summary List all active facilities
+ */
+export const ListFacilitiesResponseItem = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  displayName: zod.string(),
+  type: zod.enum(["lab", "classroom"]),
+  capacity: zod.number(),
+  systemCount: zod.number().nullish(),
+  seatCount: zod.number().nullish(),
+  description: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+});
+export const ListFacilitiesResponse = zod.array(ListFacilitiesResponseItem);
+
+/**
+ * @summary Create a new facility
+ */
+export const CreateFacilityBody = zod.object({
+  name: zod.string(),
+  displayName: zod.string(),
+  type: zod.enum(["lab", "classroom"]),
+  capacity: zod.number(),
+  systemCount: zod.number().nullish(),
+  seatCount: zod.number().nullish(),
+  description: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+});
+
+/**
+ * @summary Update a facility
+ */
+export const UpdateFacilityParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateFacilityBody = zod.object({
+  name: zod.string(),
+  displayName: zod.string(),
+  type: zod.enum(["lab", "classroom"]),
+  capacity: zod.number(),
+  systemCount: zod.number().nullish(),
+  seatCount: zod.number().nullish(),
+  description: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+});
+
+export const UpdateFacilityResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  displayName: zod.string(),
+  type: zod.enum(["lab", "classroom"]),
+  capacity: zod.number(),
+  systemCount: zod.number().nullish(),
+  seatCount: zod.number().nullish(),
+  description: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+});
+
+/**
+ * @summary Delete or deactivate a facility
+ */
+export const DeleteFacilityParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const DeleteFacilityResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  displayName: zod.string(),
+  type: zod.enum(["lab", "classroom"]),
+  capacity: zod.number(),
+  systemCount: zod.number().nullish(),
+  seatCount: zod.number().nullish(),
+  description: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
 });

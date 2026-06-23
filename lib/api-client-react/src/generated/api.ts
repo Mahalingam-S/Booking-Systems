@@ -21,8 +21,10 @@ import type {
   Booking,
   BookingStats,
   CreateBookingBody,
+  CreateFacilityBody,
   DaySchedule,
   ErrorResponse,
+  Facility,
   GetScheduleParams,
   HealthStatus,
   ListBookingsParams,
@@ -901,3 +903,335 @@ export function useGetBookingStats<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary List all active facilities
+ */
+export const getListFacilitiesUrl = () => {
+  return `/api/facilities`;
+};
+
+export const listFacilities = async (
+  options?: RequestInit,
+): Promise<Facility[]> => {
+  return customFetch<Facility[]>(getListFacilitiesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListFacilitiesQueryKey = () => {
+  return [`/api/facilities`] as const;
+};
+
+export const getListFacilitiesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listFacilities>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listFacilities>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListFacilitiesQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listFacilities>>> = ({
+    signal,
+  }) => listFacilities({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listFacilities>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListFacilitiesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listFacilities>>
+>;
+export type ListFacilitiesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all active facilities
+ */
+
+export function useListFacilities<
+  TData = Awaited<ReturnType<typeof listFacilities>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listFacilities>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListFacilitiesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a new facility
+ */
+export const getCreateFacilityUrl = () => {
+  return `/api/admin/facilities`;
+};
+
+export const createFacility = async (
+  createFacilityBody: CreateFacilityBody,
+  options?: RequestInit,
+): Promise<Facility> => {
+  return customFetch<Facility>(getCreateFacilityUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createFacilityBody),
+  });
+};
+
+export const getCreateFacilityMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createFacility>>,
+    TError,
+    { data: BodyType<CreateFacilityBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createFacility>>,
+  TError,
+  { data: BodyType<CreateFacilityBody> },
+  TContext
+> => {
+  const mutationKey = ["createFacility"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createFacility>>,
+    { data: BodyType<CreateFacilityBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createFacility(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateFacilityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createFacility>>
+>;
+export type CreateFacilityMutationBody = BodyType<CreateFacilityBody>;
+export type CreateFacilityMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Create a new facility
+ */
+export const useCreateFacility = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createFacility>>,
+    TError,
+    { data: BodyType<CreateFacilityBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createFacility>>,
+  TError,
+  { data: BodyType<CreateFacilityBody> },
+  TContext
+> => {
+  return useMutation(getCreateFacilityMutationOptions(options));
+};
+
+/**
+ * @summary Update a facility
+ */
+export const getUpdateFacilityUrl = (id: string) => {
+  return `/api/admin/facilities/${id}`;
+};
+
+export const updateFacility = async (
+  id: string,
+  createFacilityBody: CreateFacilityBody,
+  options?: RequestInit,
+): Promise<Facility> => {
+  return customFetch<Facility>(getUpdateFacilityUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createFacilityBody),
+  });
+};
+
+export const getUpdateFacilityMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateFacility>>,
+    TError,
+    { id: string; data: BodyType<CreateFacilityBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateFacility>>,
+  TError,
+  { id: string; data: BodyType<CreateFacilityBody> },
+  TContext
+> => {
+  const mutationKey = ["updateFacility"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateFacility>>,
+    { id: string; data: BodyType<CreateFacilityBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateFacility(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateFacilityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateFacility>>
+>;
+export type UpdateFacilityMutationBody = BodyType<CreateFacilityBody>;
+export type UpdateFacilityMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Update a facility
+ */
+export const useUpdateFacility = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateFacility>>,
+    TError,
+    { id: string; data: BodyType<CreateFacilityBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateFacility>>,
+  TError,
+  { id: string; data: BodyType<CreateFacilityBody> },
+  TContext
+> => {
+  return useMutation(getUpdateFacilityMutationOptions(options));
+};
+
+/**
+ * @summary Delete or deactivate a facility
+ */
+export const getDeleteFacilityUrl = (id: string) => {
+  return `/api/admin/facilities/${id}`;
+};
+
+export const deleteFacility = async (
+  id: string,
+  options?: RequestInit,
+): Promise<Facility> => {
+  return customFetch<Facility>(getDeleteFacilityUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteFacilityMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteFacility>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteFacility>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deleteFacility"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteFacility>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteFacility(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteFacilityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteFacility>>
+>;
+
+export type DeleteFacilityMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Delete or deactivate a facility
+ */
+export const useDeleteFacility = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteFacility>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteFacility>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getDeleteFacilityMutationOptions(options));
+};

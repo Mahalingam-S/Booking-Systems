@@ -40,7 +40,15 @@ function getTransporter() {
   return transporter;
 }
 
-const getOfficialLabName = (labName: string) => {
+import { Facility } from "@workspace/db";
+
+const getOfficialLabName = async (labName: string) => {
+  try {
+    const facility = await Facility.findOne({ name: labName });
+    if (facility) return facility.displayName;
+  } catch (error) {
+    console.error("Error fetching facility name", error);
+  }
   const map: Record<string, string> = {
     prajna: "THE PRAJNA SPACE",
     achula: "ACHALA",
@@ -59,7 +67,7 @@ export async function sendBookingNotification(booking: any) {
   }
 
   const principalEmail = "mahalingamshanmugam12@gmail.com";
-  const officialLabName = getOfficialLabName(booking.labName);
+  const officialLabName = await getOfficialLabName(booking.labName);
 
   const mailOptions = {
     from: `"Lab Booking System" <${senderEmail}>`,
@@ -104,7 +112,7 @@ export async function sendBookingStatusUpdate(booking: any) {
     return;
   }
 
-  const officialLabName = getOfficialLabName(booking.labName);
+  const officialLabName = await getOfficialLabName(booking.labName);
   const isApproved = booking.status === "approved";
   const subject = isApproved
     ? `✅ Booking Approved: ${officialLabName} - ${booking.date}`

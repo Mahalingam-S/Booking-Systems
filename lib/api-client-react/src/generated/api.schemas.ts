@@ -16,15 +16,6 @@ export const BookingBookerType = {
   faculty: "faculty",
 } as const;
 
-export type BookingLabName =
-  (typeof BookingLabName)[keyof typeof BookingLabName];
-
-export const BookingLabName = {
-  achula: "achula",
-  prajna: "prajna",
-  conference: "conference",
-} as const;
-
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
 
 export const BookingStatus = {
@@ -39,7 +30,7 @@ export interface Booking {
   bookerName: string;
   bookerType: BookingBookerType;
   purpose: string;
-  labName: BookingLabName;
+  labName: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -56,21 +47,12 @@ export const CreateBookingBodyBookerType = {
   faculty: "faculty",
 } as const;
 
-export type CreateBookingBodyLabName =
-  (typeof CreateBookingBodyLabName)[keyof typeof CreateBookingBodyLabName];
-
-export const CreateBookingBodyLabName = {
-  achula: "achula",
-  prajna: "prajna",
-  conference: "conference",
-} as const;
-
 export interface CreateBookingBody {
   idToken: string;
   bookerName: string;
   bookerType: CreateBookingBodyBookerType;
   purpose: string;
-  labName: CreateBookingBodyLabName;
+  labName: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -105,6 +87,60 @@ export interface BookingStats {
   pendingApprovals: number;
   todayBookings: number;
   labBreakdown: BookingStatsLabBreakdownItem[];
+}
+
+export type FacilityType = (typeof FacilityType)[keyof typeof FacilityType];
+
+export const FacilityType = {
+  lab: "lab",
+  classroom: "classroom",
+} as const;
+
+export type FacilityStatus =
+  (typeof FacilityStatus)[keyof typeof FacilityStatus];
+
+export const FacilityStatus = {
+  active: "active",
+  inactive: "inactive",
+} as const;
+
+export interface Facility {
+  id: string;
+  name: string;
+  displayName: string;
+  type: FacilityType;
+  capacity: number;
+  systemCount?: number | null;
+  seatCount?: number | null;
+  description?: string | null;
+  status: FacilityStatus;
+}
+
+export type CreateFacilityBodyType =
+  (typeof CreateFacilityBodyType)[keyof typeof CreateFacilityBodyType];
+
+export const CreateFacilityBodyType = {
+  lab: "lab",
+  classroom: "classroom",
+} as const;
+
+export type CreateFacilityBodyStatus =
+  (typeof CreateFacilityBodyStatus)[keyof typeof CreateFacilityBodyStatus];
+
+export const CreateFacilityBodyStatus = {
+  active: "active",
+  inactive: "inactive",
+} as const;
+
+export interface CreateFacilityBody {
+  name: string;
+  displayName: string;
+  type: CreateFacilityBodyType;
+  capacity: number;
+  systemCount?: number | null;
+  seatCount?: number | null;
+  description?: string | null;
+  status: CreateFacilityBodyStatus;
 }
 
 export type ListBookingsParams = {
