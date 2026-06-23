@@ -29,8 +29,7 @@ export default function Admin() {
     e.preventDefault();
     
     const admins: Record<string, string> = {
-      "principal_asc@cb.amrita.edu": "principal@9486",
-      "s_mahalingam@cb.amrita.edu": "maha@9486" // You can change this below
+      "mahalingamshanmugam12@gmail.com": "maha@9486" // You can change this below
     };
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -68,7 +67,7 @@ export default function Admin() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Official ID</p>
                 <Input
                   type="email"
-                  placeholder="name@cb.amrita.edu"
+                  placeholder="admin@gmail.com"
                   className="h-12 bg-background/50 border-border/50 rounded-xl px-4 font-bold focus:bg-background transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

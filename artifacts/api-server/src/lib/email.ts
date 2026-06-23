@@ -58,7 +58,7 @@ export async function sendBookingNotification(booking: any) {
     return;
   }
 
-  const principalEmail = "s_mahalingam@cb.amrita.edu";
+  const principalEmail = "mahalingamshanmugam12@gmail.com";
   const officialLabName = getOfficialLabName(booking.labName);
 
   const mailOptions = {
