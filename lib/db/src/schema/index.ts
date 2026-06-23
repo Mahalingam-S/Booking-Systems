@@ -1,2 +1,2 @@
-export * from "./bookings";
-export * from "./facilities";
+export * from "./bookings.js";
+export * from "./facilities.js";

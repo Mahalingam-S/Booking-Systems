@@ -2,15 +2,15 @@ import { Router, type IRouter } from "express";
 import { connectDB, Facility } from "@workspace/db";
 import { CreateFacilityBody } from "@workspace/api-zod";
 
-const router: IRouter = Router();
+const router = Router();
 
 // Get all active facilities
-router.get("/facilities", async (req, res): Promise<void> => {
+router.get("/facilities", async (req: any, res: any): Promise<void> => {
   try {
     await connectDB();
     const facilities = await Facility.find({ status: "active" }).select("-__v");
     
-    res.json(facilities.map(f => ({
+    res.json(facilities.map((f: any) => ({
       id: f._id.toString(),
       name: f.name,
       displayName: f.displayName,
@@ -28,7 +28,7 @@ router.get("/facilities", async (req, res): Promise<void> => {
 });
 
 // Create a new facility (admin only)
-router.post("/admin/facilities", async (req, res): Promise<void> => {
+router.post("/admin/facilities", async (req: any, res: any): Promise<void> => {
   try {
     const data = CreateFacilityBody.safeParse(req.body);
     if (!data.success) {
@@ -66,7 +66,7 @@ router.post("/admin/facilities", async (req, res): Promise<void> => {
 });
 
 // Update a facility
-router.put("/admin/facilities/:id", async (req, res): Promise<void> => {
+router.put("/admin/facilities/:id", async (req: any, res: any): Promise<void> => {
   try {
     const data = CreateFacilityBody.safeParse(req.body);
     if (!data.success) {
@@ -105,7 +105,7 @@ router.put("/admin/facilities/:id", async (req, res): Promise<void> => {
 });
 
 // Delete a facility
-router.delete("/admin/facilities/:id", async (req, res): Promise<void> => {
+router.delete("/admin/facilities/:id", async (req: any, res: any): Promise<void> => {
   try {
     await connectDB();
     const facility = await Facility.findByIdAndDelete(req.params.id);

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import * as schema from "./schema";
+import * as schema from "./schema/index.js";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
@@ -49,4 +49,4 @@ export async function connectDB() {
   }
 }
 
-export * from "./schema";
+export * from "./schema/index.js";
