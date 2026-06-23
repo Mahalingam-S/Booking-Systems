@@ -2,10 +2,6 @@
   "outputDirectory": "artifacts/lab-booking/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.ts"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
