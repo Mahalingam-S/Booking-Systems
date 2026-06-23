@@ -38,7 +38,7 @@ const formSchema = z.object({
   bookerName: z.string().min(2, { message: "Name must be at least 2 characters." }),
   bookerEmail: z.string().email({ message: "Invalid email address." })
     .transform(e => e.toLowerCase())
-    .refine(e => e.endsWith("@cb.amrita.edu"), { message: "Only campus email (@cb.amrita.edu) is allowed." }),
+    .refine(e => e.endsWith("@gmail.com"), { message: "Only Google mail (@gmail.com) is allowed." }),
   bookerType: z.literal("faculty").default("faculty"),
   labName: z.enum(["achula", "prajna", "conference"], { required_error: "Please select a lab." }),
   date: z.date({ required_error: "A date is required." }),
@@ -142,9 +142,9 @@ export default function Book() {
                 name="bookerEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-[10px] uppercase tracking-widest text-primary/70">Campus Email (Outlook)</FormLabel>
+                    <FormLabel className="font-bold text-[10px] uppercase tracking-widest text-primary/70">Google Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="name@cb.amrita.edu" className="h-11 bg-background/50 border-border/50 focus:bg-background transition-all" {...field} />
+                      <Input placeholder="name@gmail.com" className="h-11 bg-background/50 border-border/50 focus:bg-background transition-all" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -45,7 +45,7 @@ export const ListBookingsResponse = zod.array(ListBookingsResponseItem);
  */
 export const CreateBookingBody = zod.object({
   bookerName: zod.string(),
-  bookerEmail: zod.string().email().refine(e => e.endsWith("@cb.amrita.edu"), { message: "Only campus email IDs (@cb.amrita.edu) are allowed" }),
+  bookerEmail: zod.string().email().refine(e => e.endsWith("@gmail.com"), { message: "Only Google mail IDs (@gmail.com) are allowed" }),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.enum(["achula", "prajna", "conference"]),
