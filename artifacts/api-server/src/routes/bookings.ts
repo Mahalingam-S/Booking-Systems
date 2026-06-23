@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { connectDB, Booking } from "@workspace/db";
+import { OAuth2Client } from "google-auth-library";
 import {
   ListBookingsQueryParams,
   ListBookingsResponse,
@@ -22,6 +23,9 @@ import {
 import { sendBookingNotification, sendBookingStatusUpdate } from "../lib/email";
 
 const router: IRouter = Router();
+
+const GOOGLE_CLIENT_ID = "666601473845-0cq4am2ff0qvjb8adu6lpiusc8psb2tj.apps.googleusercontent.com";
+const oauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const LAB_OPENING_TIME = "08:50";
 const LAB_CLOSING_TIME = "18:45";
@@ -81,7 +85,33 @@ router.post("/bookings", async (req, res): Promise<void> => {
     return;
   }
 
-  const { bookerName, bookerEmail, purpose, labName, date, startTime, endTime, studentCount } = parsed.data;
+  // Verify Google OAuth Token
+  let verifiedEmail = "";
+  let verifiedName = "";
+  try {
+    const ticket = await oauthClient.verifyIdToken({
+      idToken: parsed.data.idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      res.status(403).json({ error: "Invalid Google token payload." });
+      return;
+    }
+    if (!payload.email.toLowerCase().endsWith("@gmail.com")) {
+      res.status(403).json({ error: "Only official @gmail.com accounts are authorized." });
+      return;
+    }
+    verifiedEmail = payload.email;
+    verifiedName = payload.name || payload.email.split("@")[0];
+  } catch (error) {
+    res.status(403).json({ error: "Invalid or expired Google authentication token." });
+    return;
+  }
+
+  const { purpose, labName, date, startTime, endTime, studentCount } = parsed.data;
+  const bookerName = verifiedName;
+  const bookerEmail = verifiedEmail;
   const bookerType = "faculty"; 
 
   if (!isValidTime(startTime)) {

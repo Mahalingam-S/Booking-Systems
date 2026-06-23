@@ -66,6 +66,7 @@ export const CreateBookingBodyLabName = {
 } as const;
 
 export interface CreateBookingBody {
+  idToken: string;
   bookerName: string;
   bookerType: CreateBookingBodyBookerType;
   purpose: string;

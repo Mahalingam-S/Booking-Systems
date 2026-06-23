@@ -292,6 +292,8 @@ components:
     CreateBookingBody:
       type: object
       properties:
+        idToken:
+          type: string
         bookerName:
           type: string
         bookerType:
@@ -311,6 +313,7 @@ components:
         studentCount:
           type: integer
       required:
+        - idToken
         - bookerName
         - bookerType
         - purpose

@@ -9,6 +9,7 @@ import type { CreateBookingBodyBookerType } from "./createBookingBodyBookerType"
 import type { CreateBookingBodyLabName } from "./createBookingBodyLabName";
 
 export interface CreateBookingBody {
+  idToken: string;
   bookerName: string;
   bookerType: CreateBookingBodyBookerType;
   purpose: string;
