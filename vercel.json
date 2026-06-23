@@ -2,6 +2,10 @@
   "outputDirectory": "artifacts/lab-booking/dist",
   "rewrites": [
     {
+      "source": "/api/:vpath*",
+      "destination": "/api/index?vpath=:vpath*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
