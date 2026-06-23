@@ -1,17 +1,44 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-const senderEmail = process.env.EMAIL_USER;
-const senderPassword = process.env.EMAIL_PASS;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Use SSL
-  auth: {
-    user: senderEmail,
-    pass: senderPassword,
-  },
-});
+let currentDir = __dirname;
+while (currentDir !== path.parse(currentDir).root) {
+  const envPath = path.join(currentDir, ".env");
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+  const parentDir = path.dirname(currentDir);
+  if (parentDir === currentDir) break;
+  currentDir = parentDir;
+}
+
+let transporter: nodemailer.Transporter | null = null;
+
+function getTransporter() {
+  if (!transporter) {
+    const senderEmail = process.env.EMAIL_USER;
+    const senderPassword = process.env.EMAIL_PASS;
+    if (senderEmail && senderPassword) {
+      transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // Use SSL
+        auth: {
+          user: senderEmail,
+          pass: senderPassword,
+        },
+      });
+    }
+  }
+  return transporter;
+}
 
 const getOfficialLabName = (labName: string) => {
   const map: Record<string, string> = {
@@ -23,12 +50,15 @@ const getOfficialLabName = (labName: string) => {
 };
 
 export async function sendBookingNotification(booking: any) {
-  if (!senderEmail || !senderPassword) {
+  const transporter = getTransporter();
+  const senderEmail = process.env.EMAIL_USER;
+
+  if (!transporter || !senderEmail) {
     console.warn("Email credentials not configured. Skipping notification.");
     return;
   }
 
-  const principalEmail = "principal_asc@cb.amrita.edu";
+  const principalEmail = "s_mahalingam@cb.amrita.edu";
   const officialLabName = getOfficialLabName(booking.labName);
 
   const mailOptions = {
@@ -66,7 +96,10 @@ export async function sendBookingNotification(booking: any) {
 }
 
 export async function sendBookingStatusUpdate(booking: any) {
-  if (!senderEmail || !senderPassword || !booking.bookerEmail) {
+  const transporter = getTransporter();
+  const senderEmail = process.env.EMAIL_USER;
+
+  if (!transporter || !senderEmail || !booking.bookerEmail) {
     console.warn("Email credentials or booker email missing. Skipping status update notification.");
     return;
   }
