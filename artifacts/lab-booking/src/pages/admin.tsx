@@ -29,7 +29,7 @@ export default function Admin() {
     e.preventDefault();
     
     const admins: Record<string, string> = {
-      "mahalingamshanmugam12@gmail.com": "maha@9486" // You can change this below
+      "s_mahalingam@cb.amrita.edu": "maha@9486" // You can change this below
     };
 
     const normalizedEmail = email.toLowerCase().trim();
