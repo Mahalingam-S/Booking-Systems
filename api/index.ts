@@ -1,8 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import app from "../artifacts/api-server/src/app";
 import { parse } from "url";
 
-export default (req: IncomingMessage, res: ServerResponse) => {
+export default async (req: IncomingMessage, res: ServerResponse) => {
   const parsedUrl = parse(req.url || "", true);
   
   if (parsedUrl.query.vpath) {
@@ -18,7 +17,7 @@ export default (req: IncomingMessage, res: ServerResponse) => {
         if (Array.isArray(val)) {
           val.forEach(v => searchParams.append(key, v));
         } else if (val) {
-          searchParams.append(key, val);
+          searchParams.append(key, val as string);
         }
       }
       newPath += "?" + searchParams.toString();
@@ -29,5 +28,6 @@ export default (req: IncomingMessage, res: ServerResponse) => {
     req.url = "/api" + (req.url.startsWith("/") ? "" : "/") + req.url;
   }
 
+  const { default: app } = await import("../artifacts/api-server/src/app");
   return app(req, res);
 };

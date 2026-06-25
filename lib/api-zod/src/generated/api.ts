@@ -42,15 +42,23 @@ export const ListBookingsResponse = zod.array(ListBookingsResponseItem);
 /**
  * @summary Create a new booking
  */
+export const createBookingBodyDateRegExp = new RegExp("^\\d{4}-\\d{2}-\\d{2}$");
+export const createBookingBodyStartTimeRegExp = new RegExp(
+  "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+);
+export const createBookingBodyEndTimeRegExp = new RegExp(
+  "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+);
+
 export const CreateBookingBody = zod.object({
   idToken: zod.string(),
   bookerName: zod.string(),
   bookerType: zod.enum(["faculty"]),
   purpose: zod.string(),
   labName: zod.string(),
-  date: zod.string(),
-  startTime: zod.string(),
-  endTime: zod.string(),
+  date: zod.string().regex(createBookingBodyDateRegExp),
+  startTime: zod.string().regex(createBookingBodyStartTimeRegExp),
+  endTime: zod.string().regex(createBookingBodyEndTimeRegExp),
   studentCount: zod.number(),
 });
 

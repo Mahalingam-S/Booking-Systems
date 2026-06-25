@@ -108,7 +108,11 @@ router.put("/admin/facilities/:id", async (req: any, res: any): Promise<void> =>
 router.delete("/admin/facilities/:id", async (req: any, res: any): Promise<void> => {
   try {
     await connectDB();
-    const facility = await Facility.findByIdAndDelete(req.params.id);
+    const facility = await Facility.findByIdAndUpdate(
+      req.params.id,
+      { status: "inactive" },
+      { new: true }
+    );
     
     if (!facility) {
       res.status(404).json({ error: "Facility not found" });

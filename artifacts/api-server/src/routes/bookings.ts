@@ -292,6 +292,29 @@ router.post("/admin/bookings/:id/approve", async (req, res): Promise<void> => {
     return;
   }
 
+  const bookingToApprove = await Booking.findById(params.data.id);
+  if (!bookingToApprove) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  // Check for conflicts with already approved bookings
+  const existingBookings = await Booking.find({
+    labName: bookingToApprove.labName,
+    date: bookingToApprove.date,
+    status: "approved",
+    _id: { $ne: bookingToApprove._id }
+  });
+
+  const hasConflict = existingBookings.some(b => {
+    return bookingToApprove.startTime < b.endTime && bookingToApprove.endTime > b.startTime;
+  });
+
+  if (hasConflict) {
+    res.status(409).json({ error: "This lab is already booked and approved for the selected time slot." });
+    return;
+  }
+
   const booking = await Booking.findByIdAndUpdate(
     params.data.id,
     { status: "approved" },

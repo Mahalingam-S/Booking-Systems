@@ -10,7 +10,7 @@ export interface IBooking extends Document {
   startTime: string;
   endTime: string;
   studentCount: number;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "cancelled";
   rejectionReason?: string;
   createdAt: Date;
 }
@@ -28,7 +28,7 @@ const BookingSchema: Schema = new Schema(
     studentCount: { type: Number, default: 1, required: true },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
+      enum: ["pending", "approved", "rejected", "cancelled"],
       default: "pending",
       required: true,
     },

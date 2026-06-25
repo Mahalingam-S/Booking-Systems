@@ -21,8 +21,7 @@ while (currentDir !== path.parse(currentDir).root) {
   currentDir = parentDir;
 }
 
-// Global connection state to prevent multiple connections in dev
-let cachedConnection: typeof mongoose | null = null;
+let cachedPromise: Promise<typeof mongoose> | null = null;
 
 export async function connectDB() {
   const uri = process.env.MONGODB_URI || process.env.DATABASE_URL;
@@ -31,8 +30,8 @@ export async function connectDB() {
     throw new Error("MONGODB_URI environment variable is missing. Please check your Vercel Project Settings -> Environment Variables!");
   }
 
-  if (cachedConnection) {
-    return cachedConnection;
+  if (cachedPromise) {
+    return cachedPromise;
   }
 
   try {
@@ -40,10 +39,15 @@ export async function connectDB() {
       bufferCommands: false,
     };
     console.log("Attempting to connect to MongoDB at:", uri.substring(0, 20) + "...");
-    cachedConnection = await mongoose.connect(uri, opts);
-    console.log("MongoDB Connected successfully");
-    return cachedConnection;
+    
+    cachedPromise = mongoose.connect(uri, opts).then((conn) => {
+      console.log("MongoDB Connected successfully");
+      return conn;
+    });
+    
+    return await cachedPromise;
   } catch (error) {
+    cachedPromise = null;
     console.error("MongoDB Connection Error Details:", error);
     throw error;
   }

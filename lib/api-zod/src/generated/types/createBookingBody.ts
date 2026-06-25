@@ -13,8 +13,11 @@ export interface CreateBookingBody {
   bookerType: CreateBookingBodyBookerType;
   purpose: string;
   labName: string;
+  /** @pattern ^\d{4}-\d{2}-\d{2}$ */
   date: string;
+  /** @pattern ^([01][0-9]|2[0-3]):[0-5][0-9]$ */
   startTime: string;
+  /** @pattern ^([01][0-9]|2[0-3]):[0-5][0-9]$ */
   endTime: string;
   studentCount: number;
 }
