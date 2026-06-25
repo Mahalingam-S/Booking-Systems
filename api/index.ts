@@ -1,7 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "http";
+import app from "../artifacts/api-server/src/app";
 import { parse } from "url";
 
-export default async (req: IncomingMessage, res: ServerResponse) => {
+export default (req: IncomingMessage, res: ServerResponse) => {
   const parsedUrl = parse(req.url || "", true);
   
   if (parsedUrl.query.vpath) {
@@ -28,6 +29,5 @@ export default async (req: IncomingMessage, res: ServerResponse) => {
     req.url = "/api" + (req.url.startsWith("/") ? "" : "/") + req.url;
   }
 
-  const { default: app } = await import("../artifacts/api-server/src/app");
   return app(req, res);
 };
