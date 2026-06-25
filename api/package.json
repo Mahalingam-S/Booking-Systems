@@ -1,3 +1,14 @@
 {
-  "type": "module"
+  "name": "@workspace/vercel-api",
+  "type": "module",
+  "dependencies": {
+    "express": "^5",
+    "cors": "^2",
+    "pino-http": "^10",
+    "mongoose": "^8.9.5",
+    "google-auth-library": "^10.7.0",
+    "nodemailer": "^8.0.5",
+    "pino": "^9",
+    "dotenv": "^16.4.7"
+  }
 }
