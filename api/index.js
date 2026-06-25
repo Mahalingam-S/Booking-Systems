@@ -4812,26 +4812,15 @@ app.use((err, req, res, next) => {
 var app_default = app;
 
 // ../../api-src/index.ts
-import { parse } from "url";
 var api_src_default = (req, res) => {
-  const parsedUrl = parse(req.url || "", true);
-  if (parsedUrl.query.vpath) {
-    let newPath = "/api/" + parsedUrl.query.vpath;
-    delete parsedUrl.query.vpath;
-    const queryKeys = Object.keys(parsedUrl.query);
-    if (queryKeys.length > 0) {
-      const searchParams = new URLSearchParams();
-      for (const key of queryKeys) {
-        const val = parsedUrl.query[key];
-        if (Array.isArray(val)) {
-          val.forEach((v) => searchParams.append(key, v));
-        } else if (val) {
-          searchParams.append(key, val);
-        }
-      }
-      newPath += "?" + searchParams.toString();
-    }
-    req.url = newPath;
+  const host = req.headers.host || "localhost";
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const parsedUrl = new URL(req.url || "", `${protocol}://${host}`);
+  const vpath = parsedUrl.searchParams.get("vpath");
+  if (vpath) {
+    parsedUrl.pathname = "/api/" + vpath;
+    parsedUrl.searchParams.delete("vpath");
+    req.url = parsedUrl.pathname + parsedUrl.search;
   } else if (req.url && !req.url.startsWith("/api")) {
     req.url = "/api" + (req.url.startsWith("/") ? "" : "/") + req.url;
   }

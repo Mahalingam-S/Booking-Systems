@@ -1,30 +1,18 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import app from "../artifacts/api-server/src/app";
-import { parse } from "url";
+
 
 export default (req: IncomingMessage, res: ServerResponse) => {
-  const parsedUrl = parse(req.url || "", true);
+  // Use WHATWG URL API
+  const host = req.headers.host || "localhost";
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const parsedUrl = new URL(req.url || "", `${protocol}://${host}`);
   
-  if (parsedUrl.query.vpath) {
-    let newPath = "/api/" + parsedUrl.query.vpath;
-    delete parsedUrl.query.vpath;
-    
-    // Reconstruct query string
-    const queryKeys = Object.keys(parsedUrl.query);
-    if (queryKeys.length > 0) {
-      const searchParams = new URLSearchParams();
-      for (const key of queryKeys) {
-        const val = parsedUrl.query[key];
-        if (Array.isArray(val)) {
-          val.forEach(v => searchParams.append(key, v));
-        } else if (val) {
-          searchParams.append(key, val as string);
-        }
-      }
-      newPath += "?" + searchParams.toString();
-    }
-    
-    req.url = newPath;
+  const vpath = parsedUrl.searchParams.get("vpath");
+  if (vpath) {
+    parsedUrl.pathname = "/api/" + vpath;
+    parsedUrl.searchParams.delete("vpath");
+    req.url = parsedUrl.pathname + parsedUrl.search;
   } else if (req.url && !req.url.startsWith("/api")) {
     req.url = "/api" + (req.url.startsWith("/") ? "" : "/") + req.url;
   }
