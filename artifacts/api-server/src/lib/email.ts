@@ -2,21 +2,13 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let currentDir = __dirname;
-while (currentDir !== path.parse(currentDir).root) {
-  const envPath = path.join(currentDir, ".env");
+// Find .env file for local development
+if (process.env.NODE_ENV !== "production") {
+  const envPath = path.join(process.cwd(), ".env");
   if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath });
-    break;
   }
-  const parentDir = path.dirname(currentDir);
-  if (parentDir === currentDir) break;
-  currentDir = parentDir;
 }
 
 let transporter: nodemailer.Transporter | null = null;
