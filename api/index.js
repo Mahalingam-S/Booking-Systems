@@ -4632,7 +4632,7 @@ var router3 = Router3();
 router3.get("/facilities", async (req, res) => {
   try {
     await connectDB();
-    const facilities = await Facility.find({ status: "active" }).select("-__v");
+    const facilities = await Facility.find({}).select("-__v");
     res.json(facilities.map((f) => ({
       id: f._id.toString(),
       name: f.name,
