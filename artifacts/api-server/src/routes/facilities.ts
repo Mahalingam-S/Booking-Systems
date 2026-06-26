@@ -8,7 +8,7 @@ const router = Router();
 router.get("/facilities", async (req: any, res: any): Promise<void> => {
   try {
     await connectDB();
-    const facilities = await Facility.find({ status: "active" }).select("-__v");
+    const facilities = await Facility.find({}).select("-__v");
     
     res.json(facilities.map((f: any) => ({
       id: f._id.toString(),

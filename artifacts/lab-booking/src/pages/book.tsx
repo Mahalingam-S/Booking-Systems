@@ -206,7 +206,7 @@ export default function Book() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-xl border-border/20 shadow-2xl">
-                          {facilities?.map((f) => (
+                          {facilities?.filter(f => f.status === "active").map((f) => (
                             <SelectItem key={f.id} value={f.name} className="font-bold">
                               {f.displayName} {f.capacity ? `(Capacity: ${f.capacity})` : ""}
                             </SelectItem>
