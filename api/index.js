@@ -4800,7 +4800,7 @@ var loggingMiddleware = pinoHttp({
 });
 app.use(loggingMiddleware);
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var publicPath = path3.resolve(process.cwd(), "artifacts/lab-booking/dist");
