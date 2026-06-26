@@ -413,6 +413,18 @@ function FacilityDialog({ facility }: { facility?: any }) {
   const [systemCount, setSystemCount] = useState(facility?.systemCount || "");
   const [description, setDescription] = useState(facility?.description || "");
   const [status, setStatus] = useState<"active" | "inactive">(facility?.status || "active");
+  const [timetable, setTimetable] = useState(facility?.timetable || "");
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTimetable(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const createFacility = useCreateFacility();
   const updateFacility = useUpdateFacility();
@@ -427,6 +439,7 @@ function FacilityDialog({ facility }: { facility?: any }) {
       capacity: Number(capacity),
       systemCount: systemCount ? Number(systemCount) : undefined,
       description: description || undefined,
+      timetable: timetable || undefined,
       status
     };
 
@@ -507,6 +520,14 @@ function FacilityDialog({ facility }: { facility?: any }) {
           <div className="grid grid-cols-4 items-center gap-4">
             <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Description</label>
             <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional location or details" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right text-xs font-bold uppercase tracking-widest text-muted-foreground">Timetable</label>
+            <div className="col-span-3 space-y-2">
+              <Input type="file" accept="image/*,.pdf" onChange={handleFileChange} />
+              <div className="text-center text-xs text-muted-foreground">OR</div>
+              <Input value={timetable} onChange={(e) => setTimetable(e.target.value)} placeholder="Paste URL here..." />
+            </div>
           </div>
         </div>
         <DialogFooter>

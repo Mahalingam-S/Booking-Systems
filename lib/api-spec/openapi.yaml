@@ -510,6 +510,9 @@ components:
         description:
           type: string
           nullable: true
+        timetable:
+          type: string
+          nullable: true
         status:
           type: string
           enum: [active, inactive]
@@ -540,6 +543,9 @@ components:
           type: integer
           nullable: true
         description:
+          type: string
+          nullable: true
+        timetable:
           type: string
           nullable: true
         status:

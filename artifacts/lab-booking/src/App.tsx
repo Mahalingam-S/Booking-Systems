@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Book from "@/pages/book";
 import Admin from "@/pages/admin";
 import Stats from "@/pages/stats";
+import FacilityView from "@/pages/facility";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/book" component={Book} />
+          <Route path="/facility/:name" component={FacilityView} />
           <Route path="/admin" component={Admin} />
           <Route path="/stats" component={Stats} />
           <Route component={NotFound} />

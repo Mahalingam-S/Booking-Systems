@@ -19,6 +19,7 @@ router.get("/facilities", async (req: any, res: any): Promise<void> => {
       systemCount: f.systemCount,
       seatCount: f.seatCount,
       description: f.description,
+      timetable: f.timetable,
       status: f.status
     })));
   } catch (error) {
@@ -57,6 +58,7 @@ router.post("/admin/facilities", async (req: any, res: any): Promise<void> => {
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {
@@ -96,6 +98,7 @@ router.put("/admin/facilities/:id", async (req: any, res: any): Promise<void> =>
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {
@@ -128,6 +131,7 @@ router.delete("/admin/facilities/:id", async (req: any, res: any): Promise<void>
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {

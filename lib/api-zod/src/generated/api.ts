@@ -241,6 +241,7 @@ export const ListFacilitiesResponseItem = zod.object({
   systemCount: zod.number().nullish(),
   seatCount: zod.number().nullish(),
   description: zod.string().nullish(),
+  timetable: zod.string().nullish(),
   status: zod.enum(["active", "inactive"]),
 });
 export const ListFacilitiesResponse = zod.array(ListFacilitiesResponseItem);
@@ -256,6 +257,7 @@ export const CreateFacilityBody = zod.object({
   systemCount: zod.number().nullish(),
   seatCount: zod.number().nullish(),
   description: zod.string().nullish(),
+  timetable: zod.string().nullish(),
   status: zod.enum(["active", "inactive"]),
 });
 
@@ -274,6 +276,7 @@ export const UpdateFacilityBody = zod.object({
   systemCount: zod.number().nullish(),
   seatCount: zod.number().nullish(),
   description: zod.string().nullish(),
+  timetable: zod.string().nullish(),
   status: zod.enum(["active", "inactive"]),
 });
 
@@ -286,6 +289,7 @@ export const UpdateFacilityResponse = zod.object({
   systemCount: zod.number().nullish(),
   seatCount: zod.number().nullish(),
   description: zod.string().nullish(),
+  timetable: zod.string().nullish(),
   status: zod.enum(["active", "inactive"]),
 });
 
@@ -305,5 +309,6 @@ export const DeleteFacilityResponse = zod.object({
   systemCount: zod.number().nullish(),
   seatCount: zod.number().nullish(),
   description: zod.string().nullish(),
+  timetable: zod.string().nullish(),
   status: zod.enum(["active", "inactive"]),
 });

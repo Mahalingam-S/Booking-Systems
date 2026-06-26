@@ -72,6 +72,7 @@ var facilitySchema = new mongoose2.Schema(
     systemCount: { type: Number },
     seatCount: { type: Number },
     description: { type: String },
+    timetable: { type: String },
     status: { type: String, enum: ["active", "inactive"], default: "active" }
   },
   { timestamps: true }
@@ -4179,6 +4180,7 @@ var ListFacilitiesResponseItem = objectType({
   systemCount: numberType().nullish(),
   seatCount: numberType().nullish(),
   description: stringType().nullish(),
+  timetable: stringType().nullish(),
   status: enumType(["active", "inactive"])
 });
 var ListFacilitiesResponse = arrayType(ListFacilitiesResponseItem);
@@ -4190,6 +4192,7 @@ var CreateFacilityBody = objectType({
   systemCount: numberType().nullish(),
   seatCount: numberType().nullish(),
   description: stringType().nullish(),
+  timetable: stringType().nullish(),
   status: enumType(["active", "inactive"])
 });
 var UpdateFacilityParams = objectType({
@@ -4203,6 +4206,7 @@ var UpdateFacilityBody = objectType({
   systemCount: numberType().nullish(),
   seatCount: numberType().nullish(),
   description: stringType().nullish(),
+  timetable: stringType().nullish(),
   status: enumType(["active", "inactive"])
 });
 var UpdateFacilityResponse = objectType({
@@ -4214,6 +4218,7 @@ var UpdateFacilityResponse = objectType({
   systemCount: numberType().nullish(),
   seatCount: numberType().nullish(),
   description: stringType().nullish(),
+  timetable: stringType().nullish(),
   status: enumType(["active", "inactive"])
 });
 var DeleteFacilityParams = objectType({
@@ -4228,6 +4233,7 @@ var DeleteFacilityResponse = objectType({
   systemCount: numberType().nullish(),
   seatCount: numberType().nullish(),
   description: stringType().nullish(),
+  timetable: stringType().nullish(),
   status: enumType(["active", "inactive"])
 });
 
@@ -4642,6 +4648,7 @@ router3.get("/facilities", async (req, res) => {
       systemCount: f.systemCount,
       seatCount: f.seatCount,
       description: f.description,
+      timetable: f.timetable,
       status: f.status
     })));
   } catch (error) {
@@ -4673,6 +4680,7 @@ router3.post("/admin/facilities", async (req, res) => {
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {
@@ -4706,6 +4714,7 @@ router3.put("/admin/facilities/:id", async (req, res) => {
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {
@@ -4734,6 +4743,7 @@ router3.delete("/admin/facilities/:id", async (req, res) => {
       systemCount: facility.systemCount,
       seatCount: facility.seatCount,
       description: facility.description,
+      timetable: facility.timetable,
       status: facility.status
     });
   } catch (error) {

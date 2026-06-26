@@ -9,6 +9,7 @@ const facilitySchema = new mongoose.Schema(
     systemCount: { type: Number },
     seatCount: { type: Number },
     description: { type: String },
+    timetable: { type: String },
     status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true }

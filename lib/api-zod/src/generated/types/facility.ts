@@ -17,5 +17,6 @@ export interface Facility {
   systemCount?: number | null;
   seatCount?: number | null;
   description?: string | null;
+  timetable?: string | null;
   status: FacilityStatus;
 }

@@ -114,7 +114,7 @@ export default function Home() {
                   
                   <div className="flex flex-col gap-3 mt-4">
                     <Link 
-                      href={`/book?lab=${lab.labName}`} 
+                      href={`/facility/${lab.labName}`} 
                       className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground h-9 rounded-lg text-xs font-black uppercase tracking-widest shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98]"
                     >
                       <Building2 className="h-4 w-4" />
@@ -156,7 +156,10 @@ export default function Home() {
                               <Clock className="h-3.5 w-3.5" />
                               {booking.startTime} - {booking.endTime}
                             </div>
-                            <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest bg-muted/40 border-none">
+                            <Badge 
+                              variant="outline" 
+                              className="text-[10px] uppercase font-black tracking-widest bg-muted/40 border-none"
+                            >
                               {booking.bookerType}
                             </Badge>
                           </div>
