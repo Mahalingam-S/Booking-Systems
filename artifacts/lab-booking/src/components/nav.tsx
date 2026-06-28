@@ -49,12 +49,8 @@ export function Nav() {
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group transition-transform active:scale-95 shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg border border-white/40 overflow-hidden shrink-0">
-                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
-              </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-base md:text-xl font-black tracking-tighter text-foreground leading-none truncate md:overflow-visible">Amrita School Of Computing</span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-0.5 truncate">Booking System</span>
+                <span className="text-base md:text-xl font-black tracking-tighter text-foreground leading-none truncate md:overflow-visible">Booking System</span>
               </div>
             </Link>
 
